@@ -1,0 +1,18 @@
+{
+  "name": "avatar",
+  "version": "0.1.0",
+  "description": "avatar",
+  "keywords": [],
+  "author": {
+    "name": "Hojoki GmbH",
+    "email": "support@hojoki.com",
+    "url": "http://hojoki.com"
+  },
+  "dependencies": {
+    "canvas": "~1.1.0",
+    "easy-crc32": "0.0.2",
+    "colour-proximity": "0.0.2"
+  },
+  "repository": {},
+  "bugs": {}
+}
