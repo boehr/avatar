@@ -21,7 +21,7 @@ exports.start = function() {
     var params = url.parse(req.url, true).query || {};
 
     params.h = params.t || '?';
-    params.c = params.c || determineColor(params.h);
+    params.c = params.c || determineColor2(params.h);
     params.t = (params.h).substr(0, 1).toUpperCase();
     params.s = Number(params.s) || 150;
 
@@ -67,7 +67,7 @@ exports.start = function() {
     res.end(debugData);
   }
 
-  function determineColor(string, avoid) {
+  function determineColor1(string, avoid) {
     var crc = crc32.calculate(string);
    	var hex = crc.toString(16);
 
@@ -89,6 +89,24 @@ exports.start = function() {
    	}
 
    	return "#" + hex.substring(0, 6);
+  }
+
+
+  function djb2(str){
+    var hash = 5381;
+    for (var i = 0; i < str.length; i++) {
+      hash = ((hash << 5) + hash) + str.charCodeAt(i); /* hash * 33 + c */
+    }
+    return hash;
+  }
+
+  function determineColor2(str) {
+
+    var hash = djb2(str);
+    var r = (hash & 0xFF0000) >> 16;
+    var g = (hash & 0x00FF00) >> 8;
+    var b = hash & 0x0000FF;
+    return "#" + ("0" + r.toString(16)).substr(-2) + ("0" + g.toString(16)).substr(-2) + ("0" + b.toString(16)).substr(-2);
   }
 
   function drawAvatar(params) {
