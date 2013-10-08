@@ -20,8 +20,8 @@ exports.start = function() {
     var params = url.parse(req.url, true).query;
     console.log(params);
 
+    params.h = params.t;
     params.t = (params.t || '?').substr(0, 1).toUpperCase();
-    params.h = params.h || params.t;
     params.c = params.c || determineColor(params.h);
     params.s = Number(params.s) || 150;
 
@@ -96,7 +96,7 @@ exports.start = function() {
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, width, height);
 
-    ctx.font = Math.round(height * 0.66) + 'pt Helvetica Neue';
+    ctx.font = Math.round(height * 0.5) + 'pt Helvetica Neue';
     ctx.fillStyle = 'rgba(0, 0, 0, .5)';
     var textSize = ctx.measureText(initials);
     ctx.fillText(initials, (width - textSize.width)/2, (height + textSize.actualBoundingBoxAscent)/2);
