@@ -4,6 +4,7 @@ var Canvas = require('canvas');
 var Image = Canvas.Image;
 var http = require('http');
 var url = require('url');
+var request = require('request');
 
 var crc32 	= require("easy-crc32");
 var cp		  = require("colour-proximity");
@@ -21,36 +22,38 @@ exports.start = function() {
     console.log(params);
 
     params.h = params.t;
-    params.t = (params.t || '?').substr(0, 1).toUpperCase();
     params.c = params.c || determineColor(params.h);
+    params.t = (params.t || '?').substr(0, 1).toUpperCase();
     params.s = Number(params.s) || 150;
 
     if (req.method === 'GET') {
 
-      var canvas = new Canvas(params.s, params.s);
-      var ctx = canvas.getContext('2d');
+      var afterLoadImage = function(canvas) {
 
-      drawAvatar(ctx, params.t, params.c);
+        var stream = canvas ? canvas.createPNGStream() : drawAvatar(params);
 
-//      var out = fs.createWriteStream(__dirname + '/dummy.png');
-      var stream = canvas.createPNGStream();
+        stream.on('data', function(chunk) {
+          res.write(chunk);
+        });
 
-      stream.on('data', function(chunk){
-//        out.write(chunk);
-        res.write(chunk);
-      });
+        stream.on('end', function(chunk) {
+          res.end(chunk);
+        });
 
-      stream.on('end', function(chunk) {
-//        console.log('saved png');
-        res.end(chunk);
-      });
+        // TODO: etag, maxAge
 
-      // TODO: etag, maxAge
+        res.writeHead(200, {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'max-age=7200'
+        });
 
-      res.writeHead(200, {
-        'Content-Type': 'image/png'
-      });
+      };
 
+      if (params.u) {
+        loadImg(params.u, params.s, afterLoadImage)
+      } else {
+        afterLoadImage(null);
+      }
 
       return;
 
@@ -67,14 +70,16 @@ exports.start = function() {
     var crc = crc32.calculate(string);
    	var hex = crc.toString(16);
 
-   	if(avoid !== undefined){
-   		if(avoid.avoid !== undefined){
-   			if(avoid.proximity === undefined){
+   	if (avoid !== undefined) {
+   		if (avoid.avoid !== undefined) {
+
+        if (avoid.proximity === undefined) {
    				avoid.proximity = '30';
    			}
-   			for(var i=0;i<(hex.length-6);i++){
+
+   			for (var i=0;i<(hex.length-6);i++) {
    				var sub = "#" + hex.substring(i, 6+i);
-   				if(cp.proximity(avoid.avoid, sub)>avoid.proximity){
+   				if (cp.proximity(avoid.avoid, sub) > avoid.proximity) {
    					return sub;
    				}
    			}
@@ -85,15 +90,16 @@ exports.start = function() {
    	return "#" + hex.substring(0, 6);
   }
 
-  function drawAvatar(ctx, initials, bgColor) {
+  function drawAvatar(params) {
 
-    var height = ctx.canvas.height;
-    var width = ctx.canvas.width;
+    var canvas = new Canvas(params.s, params.s);
+    var ctx = canvas.getContext('2d');
 
-    initials = initials || '?';
-    bgColor = bgColor || 'rgb(155, 255, 115)';
+    var height = params.s;
+    var width = params.s;
 
-    ctx.fillStyle = bgColor;
+    var initials = params.t || '?';
+    ctx.fillStyle = params.c || 'rgb(155, 255, 115)';
     ctx.fillRect(0, 0, width, height);
 
     ctx.font = Math.round(height * 0.5) + 'pt Helvetica Neue';
@@ -102,31 +108,45 @@ exports.start = function() {
     ctx.fillText(initials, (width - textSize.width)/2, (height + textSize.actualBoundingBoxAscent)/2);
 
     ctx.save();
+
+    return canvas.createPNGStream();
   }
 
-  function loadImg(imgURL, size) {
-    var img = new Image();
-    var start = new Date;
+  function loadImg(imgURL, size, callback) {
+    console.log('loadImg', imgURL, size);
 
-    img.onerror = function(err) {
-      throw err;
-    };
+    request({ url: imgURL, encoding: 'binary' }, function (error, imageResponse, imageBody) {
 
-    img.onload = function() {
-      var canvas = new Canvas(size, size);
-      var ctx = canvas.getContext('2d');
+        if (error) {
+          callback(null);
+          return;
+        }
 
-      ctx.imageSmoothingEnabled = true;
-      ctx.drawImage(img, 0, 0, size, size);
+        var type    = imageResponse.headers["content-type"];
+        var prefix  = "data:" + type + ";base64,";
+        var base64  = new Buffer(imageBody, 'binary').toString('base64');
+        var dataURI = prefix + base64;
 
-      canvas.toBuffer(function(err, buf) {
-        fs.writeFile(__dirname + '/resize.png', buf, function(){
-          console.log('Resized and saved in %dms', new Date - start);
-        });
-      });
-    };
+        var img = new Image();
 
-    img.src = imgURL;
+        img.onerror = function(err) {
+          console.log('img.onerror', err);
+          callback(null);
+        };
+
+        img.onload = function() {
+          var canvas = new Canvas(size, size);
+          var ctx = canvas.getContext('2d');
+
+          ctx.imageSmoothingEnabled = true;
+          ctx.drawImage(img, 0, 0, size, size);
+
+          callback(canvas, ctx);
+        };
+
+        img.src = dataURI;
+      }
+    );
   }
 
 };
