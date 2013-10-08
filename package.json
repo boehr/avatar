@@ -11,7 +11,9 @@
   "dependencies": {
     "canvas": "~1.1.0",
     "easy-crc32": "0.0.2",
-    "colour-proximity": "0.0.2"
+    "colour-proximity": "0.0.2",
+    "request": "~2.27.0",
+    "pngcrush": "0.0.3"
   },
   "repository": {},
   "bugs": {}
