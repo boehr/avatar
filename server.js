@@ -45,7 +45,7 @@ exports.start = function() {
 
         res.writeHead(200, {
           'Content-Type': 'image/png',
-          'Cache-Control': 'max-age=7200'
+          'Cache-Control': 'max-age=86400' /*24h*/
         });
 
       };
@@ -139,6 +139,7 @@ exports.start = function() {
           var canvas = new Canvas(size, size);
           var ctx = canvas.getContext('2d');
 
+          ctx.patternQuality = "best";
           ctx.imageSmoothingEnabled = true;
           ctx.drawImage(img, 0, 0, size, size);
 
