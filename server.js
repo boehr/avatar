@@ -18,13 +18,14 @@ exports.start = function() {
 
   function handler (req, res) {
 
-    var params = url.parse(req.url, true).query;
-    console.log(params);
+    var params = url.parse(req.url, true).query || {};
 
-    params.h = params.t;
+    params.h = params.t || '?';
     params.c = params.c || determineColor(params.h);
-    params.t = (params.t || '?').substr(0, 1).toUpperCase();
+    params.t = (params.h).substr(0, 1).toUpperCase();
     params.s = Number(params.s) || 150;
+
+    console.log(params);
 
     if (req.method === 'GET') {
 
