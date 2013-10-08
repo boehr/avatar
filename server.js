@@ -6,15 +6,16 @@ var http = require('http');
 var url = require('url');
 var request = require('request');
 
-var crc32 	= require("easy-crc32");
-var cp		  = require("colour-proximity");
+var crc32 	= require('easy-crc32');
+var cp		  = require('colour-proximity');
+var PngCrush = require('pngcrush');
 
 exports.start = function() {
 
   var port = 8888;
 
   http.createServer(handler).listen(port);
-  console.log("Avatar Server Running on", port);
+  console.log('Avatar Server Running on', port);
 
   function handler (req, res) {
 
@@ -33,19 +34,17 @@ exports.start = function() {
 
         var stream = canvas ? canvas.createPNGStream() : drawAvatar(params);
 
-        stream.on('data', function(chunk) {
-          res.write(chunk);
-        });
+        // image optimization
+        stream = stream.pipe(new PngCrush(['-brute', '-rem', 'alla']));
 
-        stream.on('end', function(chunk) {
-          res.end(chunk);
-        });
+        stream.pipe(res);
 
         // TODO: etag, maxAge
 
         res.writeHead(200, {
           'Content-Type': 'image/png',
-          'Cache-Control': 'max-age=86400' /*24h*/
+          'Cache-Control': 'max-age=86400', /*24h*/
+          'Last-Modified': new Date().toISOString()
         });
 
       };
@@ -79,7 +78,7 @@ exports.start = function() {
    			}
 
    			for (var i=0;i<(hex.length-6);i++) {
-   				var sub = "#" + hex.substring(i, 6+i);
+   				var sub = '#' + hex.substring(i, 6+i);
    				if (cp.proximity(avoid.avoid, sub) > avoid.proximity) {
    					return sub;
    				}
@@ -88,7 +87,7 @@ exports.start = function() {
    		}
    	}
 
-   	return "#" + hex.substring(0, 6);
+   	return '#' + hex.substring(0, 6);
   }
 
 
@@ -106,7 +105,7 @@ exports.start = function() {
     var r = (hash & 0xFF0000) >> 16;
     var g = (hash & 0x00FF00) >> 8;
     var b = hash & 0x0000FF;
-    return "#" + ("0" + r.toString(16)).substr(-2) + ("0" + g.toString(16)).substr(-2) + ("0" + b.toString(16)).substr(-2);
+    return '#' + ('0' + r.toString(16)).substr(-2) + ('0' + g.toString(16)).substr(-2) + ('0' + b.toString(16)).substr(-2);
   }
 
   function drawAvatar(params) {
@@ -141,8 +140,8 @@ exports.start = function() {
           return;
         }
 
-        var type    = imageResponse.headers["content-type"];
-        var prefix  = "data:" + type + ";base64,";
+        var type    = imageResponse.headers['content-type'];
+        var prefix  = 'data:' + type + ';base64,';
         var base64  = new Buffer(imageBody, 'binary').toString('base64');
         var dataURI = prefix + base64;
 
@@ -157,7 +156,7 @@ exports.start = function() {
           var canvas = new Canvas(size, size);
           var ctx = canvas.getContext('2d');
 
-          ctx.patternQuality = "best";
+          ctx.patternQuality = 'best';
           ctx.imageSmoothingEnabled = true;
           ctx.drawImage(img, 0, 0, size, size);
 
