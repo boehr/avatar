@@ -43,8 +43,8 @@ exports.start = function() {
 
         res.writeHead(200, {
           'Content-Type': 'image/png',
-          'Cache-Control': 'max-age=86400', /*24h*/
-          'Last-Modified': new Date().toISOString()
+          'Cache-Control': 'max-age=86400, public', /*24h*/
+          'Last-Modified': 'Wed, 15 Nov 1995 04:58:08 GMT'
         });
 
       };
