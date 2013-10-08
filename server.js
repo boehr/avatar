@@ -1,6 +1,7 @@
 'use strict';
 
 var Canvas = require('canvas');
+var Image = Canvas.Image;
 var http = require('http');
 var url = require('url');
 
@@ -19,7 +20,7 @@ exports.start = function() {
     var params = url.parse(req.url, true).query;
     console.log(params);
 
-    params.t = (params.t || '?').toUpperCase();
+    params.t = (params.t || '?').substr(0, 1).toUpperCase();
     params.h = params.h || params.t;
     params.c = params.c || determineColor(params.h);
     params.s = Number(params.s) || 150;
@@ -101,6 +102,31 @@ exports.start = function() {
     ctx.fillText(initials, (width - textSize.width)/2, (height + textSize.actualBoundingBoxAscent)/2);
 
     ctx.save();
+  }
+
+  function loadImg(imgURL, size) {
+    var img = new Image();
+    var start = new Date;
+
+    img.onerror = function(err) {
+      throw err;
+    };
+
+    img.onload = function() {
+      var canvas = new Canvas(size, size);
+      var ctx = canvas.getContext('2d');
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(img, 0, 0, size, size);
+
+      canvas.toBuffer(function(err, buf) {
+        fs.writeFile(__dirname + '/resize.png', buf, function(){
+          console.log('Resized and saved in %dms', new Date - start);
+        });
+      });
+    };
+
+    img.src = imgURL;
   }
 
 };
