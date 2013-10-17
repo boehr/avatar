@@ -50,7 +50,13 @@ exports.start = function() {
       };
 
       if (params.u) {
+
+        if (params.u.indexOf('gravatar') !== -1) {
+          params.u = params.u.split('?').shift() + '?s=' + params.s + '&d=404';
+        }
+
         loadImg(params.u, params.s, afterLoadImage)
+
       } else {
         afterLoadImage(null);
       }
