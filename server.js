@@ -2,7 +2,7 @@
 
 var http     = require('http');
 var url      = require('url');
-
+                                                                                 s
 var Canvas   = require('canvas');
 var Image    = Canvas.Image;
 
@@ -107,7 +107,7 @@ exports.start = function() {
   }
 
   function loadImg(imgURL, size, callback) {
-    console.log('loadImg', imgURL, size);
+//    console.log('INFO: loadImg', imgURL, size);
 
     request({ url: imgURL, encoding: 'binary' }, function (error, imageResponse, imageBody) {
 
