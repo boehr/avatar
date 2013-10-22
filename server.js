@@ -1,101 +1,71 @@
 'use strict';
 
-var Canvas = require('canvas');
-var Image = Canvas.Image;
-var http = require('http');
-var url = require('url');
-var request = require('request');
+var http     = require('http');
+var url      = require('url');
 
-var crc32 	= require('easy-crc32');
-var cp		  = require('colour-proximity');
+var Canvas   = require('canvas');
+var Image    = Canvas.Image;
+
+var request  = require('request');
 var PngCrush = require('pngcrush');
 
 exports.start = function() {
 
-  var port = 8888;
+  var port = process.argv[2] || 8888;
 
   http.createServer(handler).listen(port);
-  console.log('Avatar Server Running on', port);
+  console.log('INFO: Avatar Server Running on', port);
 
   function handler (req, res) {
 
     var params = url.parse(req.url, true).query || {};
 
     params.h = params.t || '?';
-    params.c = params.c || determineColor2(params.h);
+    params.c = params.c || determineColor(params.h);
     params.t = (params.h).substr(0, 1).toUpperCase();
     params.s = Number(params.s) || 150;
 
-    console.log(params);
+    var date = new Date();
+    var etag = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
 
-    if (req.method === 'GET') {
-
-      var afterLoadImage = function(canvas) {
-
-        var stream = canvas ? canvas.createPNGStream() : drawAvatar(params);
-
-        // image optimization
-        stream = stream.pipe(new PngCrush(['-brute', '-rem', 'alla']));
-
-        stream.pipe(res);
-
-        // TODO: etag, maxAge
-
-        res.writeHead(200, {
-          'Content-Type': 'image/png',
-          'Cache-Control': 'max-age=86400, public', /*24h*/
-          'Last-Modified': 'Wed, 15 Nov 1995 04:58:08 GMT'
-        });
-
-      };
-
-      if (params.u) {
-
-        if (params.u.indexOf('gravatar') !== -1) {
-          params.u = params.u.split('?').shift() + '?s=' + params.s + '&d=404';
-        }
-
-        loadImg(params.u, params.s, afterLoadImage)
-
-      } else {
-        afterLoadImage(null);
-      }
-
+    if (req.headers['if-none-match'] === etag) {
+      res.writeHead(304);
+      res.end();
       return;
-
     }
 
-    // didn't expected this
-    var debugData = req.method + '  ' + req.url;
-    console.log(debugData);
-    res.writeHead(200);
-    res.end(debugData);
+    if (params.u) {
+
+      if (params.u.indexOf('gravatar') !== -1) {
+        params.u = params.u.split('?').shift() + '?s=' + params.s + '&d=404';
+      }
+
+      loadImg(params.u, params.s, afterLoadImage.bind(this, params, res, etag))
+
+    } else {
+
+      afterLoadImage(params, res, null);
+
+    }
   }
 
-  function determineColor1(string, avoid) {
-    var crc = crc32.calculate(string);
-   	var hex = crc.toString(16);
+  function afterLoadImage(params, res, etag, canvas) {
 
-   	if (avoid !== undefined) {
-   		if (avoid.avoid !== undefined) {
+    var stream = canvas ? canvas.createPNGStream() : drawAvatar(params);
 
-        if (avoid.proximity === undefined) {
-   				avoid.proximity = '30';
-   			}
+    res.writeHead(200, {
+      'Content-Type': 'image/png',
+      'Cache-Control': 'max-age=86400, public', /*24h*/
+      'ETag': etag
+    });
 
-   			for (var i=0;i<(hex.length-6);i++) {
-   				var sub = '#' + hex.substring(i, 6+i);
-   				if (cp.proximity(avoid.avoid, sub) > avoid.proximity) {
-   					return sub;
-   				}
-   			}
-   			//todo Error that a sufficiently far colour could not be calculated. To be honest, it should try something else, I don't know what though.
-   		}
-   	}
+    // image optimization
+    stream = stream.pipe(new PngCrush(['-brute', '-rem', 'alla']));
 
-   	return '#' + hex.substring(0, 6);
+    // pipe to response
+    stream.pipe(res);
+
   }
-
 
   function djb2(str){
     var hash = 5381;
@@ -105,7 +75,7 @@ exports.start = function() {
     return hash;
   }
 
-  function determineColor2(str) {
+  function determineColor(str) {
 
     var hash = djb2(str);
     var r = (hash & 0xFF0000) >> 16;
@@ -142,19 +112,25 @@ exports.start = function() {
     request({ url: imgURL, encoding: 'binary' }, function (error, imageResponse, imageBody) {
 
         if (error) {
+          console.error('ERROR: afterReq -', error);
+          callback(null);
+          return;
+        }
+
+        if (imageResponse.statusCode === 404) { // image does not exist
           callback(null);
           return;
         }
 
         var type    = imageResponse.headers['content-type'];
         var prefix  = 'data:' + type + ';base64,';
-        var base64  = new Buffer(imageBody, 'binary').toString('base64');
+        var base64  = new Buffer(imageBody, 'binary').toString('base64'); // TODO [scthi]: use a pool of buffers
         var dataURI = prefix + base64;
 
         var img = new Image();
 
         img.onerror = function(err) {
-          console.log('img.onerror', err);
+          console.error('ERROR: img.onerror -', err);
           callback(null);
         };
 
