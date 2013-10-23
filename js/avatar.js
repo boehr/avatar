@@ -28,7 +28,7 @@
   }
 
   if (exports.window) { // special handling for browser mode
-    exports = exports.window.avatar = {};
+    exports = exports.window.avatar = exports.window.avatar || {};
   }
 
   exports.determineColor = function(str) {

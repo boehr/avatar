@@ -4,21 +4,33 @@
 <head>
   <title>Avatar Test</title>
   <style>
-
+    img {
+      display: inline-block;
+      margin: 20px;
+    }
   </style>
 </head>
 
 <body>
   <script src="js/avatar.js"></script>
+  <script src="js/browser.js"></script>
+
   <script>
+    (function() {
 
-    var canvas = document.createElement('canvas');
-    canvas.height = 150;
-    canvas.width = 150;
-    document.body.appendChild(canvas);
+      'use strict';
 
-    window.avatar.drawAvatar(canvas, 'T', '#cc00cc');
+      // valid image
+      document.body.appendChild(
+        avatar.createImage('Thilo Schmalfuß', 'http://www.gravatar.com/avatar/00100a3b8dd5155ea91377844a871888.png?s=10?d=http%3A%2F%2Fbla.de', 150)
+      );
 
+      // invalid image
+      document.body.appendChild(
+        avatar.createImage('Thilo Schmalfuß', 'http://www.gravatar.com/avatar/XXXXa3b8dd5155ea91377844a871888.png?s=10?d=http%3A%2F%2Fbla.de', 150)
+      );
+
+    }());
   </script>
 </body>
 
