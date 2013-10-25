@@ -4,9 +4,10 @@
 <head>
   <title>Avatar Test</title>
   <style>
-    img {
+    canvas, img {
+      border-radius: 100px;
       display: inline-block;
-      margin: 20px;
+      margin: 5px;
     }
   </style>
 </head>
@@ -20,15 +21,23 @@
 
       'use strict';
 
-      // valid image
-      document.body.appendChild(
-        avatar.createImage('Thilo Schmalfuß', 'http://www.gravatar.com/avatar/00100a3b8dd5155ea91377844a871888.png?s=10?d=http%3A%2F%2Fbla.de', 150)
-      );
+      var size = 90;
 
-      // invalid image
-      document.body.appendChild(
-        avatar.createImage('Thilo Schmalfuß', 'http://www.gravatar.com/avatar/XXXXa3b8dd5155ea91377844a871888.png?s=10?d=http%3A%2F%2Fbla.de', 150)
-      );
+//      // valid image
+//      document.body.appendChild(
+//        avatar.createImage('Thilo Schmalfuß', 'http://www.gravatar.com/avatar/00100a3b8dd5155ea91377844a871888.png?s=10?d=http%3A%2F%2Fbla.de', size)
+//      );
+//
+//      // invalid image
+//      document.body.appendChild(
+//        avatar.createImage('Thilo Schmalfuß', 'http://www.gravatar.com/avatar/XXXXa3b8dd5155ea91377844a871888.png?s=10?d=http%3A%2F%2Fbla.de', size)
+//      );
+
+      for (var i=0; i<avatar.colors.length; i++) {
+        var canvas = avatar.createCanvas(size);
+        avatar.drawAvatar(canvas, String.fromCharCode(i + 65), avatar.colors[i]);
+        document.body.appendChild(canvas);
+      }
 
     }());
   </script>

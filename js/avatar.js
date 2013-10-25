@@ -31,12 +31,14 @@
     exports = exports.window.avatar = exports.window.avatar || {};
   }
 
+  exports.colors = [ '#672E47', '#FF737B', '#FF8473', '#FF9A73', '#FFAF73', '#FFC573', '#FFD473', '#FFE373', '#FFF273', '#F7FF73', '#C9FF73', '#9BFF73', '#73FF78', '#73FFA9', '#73FFE0', '#4994A3', '#73B0FF', '#7386FF', '#7E73FF', '#7153B9', '#BB73FF', '#AB54BC', '#666', '#999', '#bbb', '#ddd' ];
+
   exports.determineColor = function(str) {
     var hash = djb2(str);
-    var r = (hash & 0xFF0000) >> 16;
-    var g = (hash & 0x00FF00) >> 8;
-    var b = hash & 0x0000FF;
-    return '#' + ('0' + r.toString(16)).substr(-2) + ('0' + g.toString(16)).substr(-2) + ('0' + b.toString(16)).substr(-2);
+
+    var idx = hash % exports.colors.length;
+    return exports.colors[idx];
+
   };
 
   exports.drawAvatar = function(canvas, initials, color) {

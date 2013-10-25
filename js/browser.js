@@ -4,12 +4,16 @@
 
   var avatar = window.avatar = window.avatar || {};
 
-  avatar.createImage = function(name, url, size) {
-
+  avatar.createCanvas = function(size) {
     var canvas = document.createElement('canvas');
     canvas.height = size;
     canvas.width = size;
+    return canvas;
+  },
 
+  avatar.createImage = function(name, url, size) {
+
+    var canvas = avatar.createCanvas(size);
     var color = avatar.determineColor('Thilo Schmalfuß');
     avatar.drawAvatar(canvas, 'T', color);
 
