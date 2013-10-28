@@ -2,6 +2,7 @@
 
 var http = require('http');
 var url = require('url');
+var crypto = require('crypto');
 var PngCrush = require('pngcrush');
 
 var Canvas = require('canvas');
@@ -9,7 +10,6 @@ var Image = Canvas.Image;
 var request = require('request');
 
 var avatar = require('./avatar');
-
 
 function loadImg(imgURL, size, callback) {
   // node canvas doesn't support remote urls for images, so we have to load the images by ourselves
@@ -72,6 +72,14 @@ function handleRequest(req, res) {
     res.writeHead(304);
     res.end();
     return;
+  }
+
+  // if no image url is given, but the username/hash is an email
+  // we try to load the corresponding gravatar pic
+  if (!params.u && params.h.indexOf('@') !== -1) {
+    var md5 = crypto.createHash('md5');
+    md5.update(params.h);
+    params.u = 'http://www.gravatar.com/avatar/' + md5.digest('hex') + '.png';
   }
 
   if (params.u) {
