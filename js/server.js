@@ -60,7 +60,7 @@ function handleRequest(req, res) {
 
   var params = url.parse(req.url, true).query || {};
 
-  params.h = params.t || '?';
+  params.h = params.h || params.t || '?';
   params.c = params.c || avatar.determineColor(params.h);
   params.t = (params.h).substr(0, 1).toUpperCase();
   params.s = Number(params.s) || 150;
