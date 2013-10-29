@@ -10,6 +10,8 @@ Setup
 * go to project folder and run 'npm install'
 * .bin/avatar <port> (starts the server, port is optional)
 
+Note: installation can be a bit tricky, since the required lib (node-canvas) depends on a lib call "cairo", which must be installed properly on the system. (See: https://github.com/LearnBoost/node-canvas#installation)
+
 Usage
 -------------------------------------------------
 
