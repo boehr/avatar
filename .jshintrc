@@ -1,5 +1,6 @@
 {
   "boss": true,
+  "browser": true,
   "curly": true,
   "eqeqeq": true,
   "eqnull": true,
@@ -9,10 +10,16 @@
   "laxcomma": true,
   "supernew": true,
   "newcap": true,
-  "node": true,
   "noarg": true,
   "sub": true,
   "undef": true,
   "globals": {
+    "console": false,
+    "document": false,
+    "exports": false,
+    "module": false,
+    "require": false,
+    "process": false,
+    "Buffer": false
   }
 }

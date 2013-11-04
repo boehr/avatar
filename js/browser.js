@@ -9,7 +9,7 @@
     canvas.height = size;
     canvas.width = size;
     return canvas;
-  },
+  };
 
   avatar.createImage = function(name, url, size) {
 
