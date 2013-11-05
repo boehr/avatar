@@ -40,6 +40,29 @@
     return exports.colors[idx];
 
   };
+  
+  exports.validateURL = function(url, size) {
+    
+    if (url) {
+
+      size = size || 150;
+      var startIdx = url.indexOf('gravatar');
+      if (startIdx !== -1) {
+        
+        startIdx = url.indexOf('?', startIdx);
+        
+        if (startIdx !== -1) {
+          url = url.split('?').shift() + '?s=' + size + '&d=404';
+        }
+        
+      }
+
+      
+    }
+    
+    return url;
+
+  };
 
   exports.drawAvatar = function(canvas, initials, color) {
 

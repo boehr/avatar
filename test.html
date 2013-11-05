@@ -33,11 +33,17 @@
 //        avatar.createImage('Thilo Schmalfuß', 'http://www.gravatar.com/avatar/XXXXa3b8dd5155ea91377844a871888.png?s=10?d=http%3A%2F%2Fbla.de', size)
 //      );
 
-      for (var i=0; i<avatar.colors.length; i++) {
-        var canvas = avatar.createCanvas(size);
-        avatar.drawAvatar(canvas, String.fromCharCode(i + 65), avatar.colors[i]);
-        document.body.appendChild(canvas);
-      }
+      // inception image
+      document.body.appendChild(
+        avatar.createImage('Anton Netzkante', 'https://d35va0jwnexy3a.cloudfront.net/?s=64&t=patr.rudolph%2Btest%40gmail.com&u=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F82e58d1d00138a7bf3fc066afb1802b5.png%3Fs%3D64', size)
+      );
+
+      // a -z in colors
+//      for (var i=0; i<avatar.colors.length; i++) {
+//        var canvas = avatar.createCanvas(size);
+//        avatar.drawAvatar(canvas, String.fromCharCode(i + 65), avatar.colors[i]);
+//        document.body.appendChild(canvas);
+//      }
 
     }());
   </script>

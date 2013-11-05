@@ -83,13 +83,12 @@
       md5.update(params.h);
       params.u = 'http://www.gravatar.com/avatar/' + md5.digest('hex') + '.png';
     }
+    
+    
 
     if (params.u) {
 
-      if (params.u.indexOf('gravatar') !== -1) {
-        params.u = params.u.split('?').shift() + '?s=' + params.s + '&d=404';
-      }
-
+      params.u = avatar.validateURL(params.u);
       loadImg(params.u, params.s, afterLoadImage.bind(null, params, res, etag));
 
     } else {

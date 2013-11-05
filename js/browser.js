@@ -14,8 +14,8 @@
   avatar.createImage = function(name, url, size) {
 
     var canvas = avatar.createCanvas(size);
-    var color = avatar.determineColor('Thilo Schmalfuß');
-    avatar.drawAvatar(canvas, 'T', color);
+    var color = avatar.determineColor(name);
+    avatar.drawAvatar(canvas, name.toUpperCase().substr(0, 1), color);
 
     var img = new Image();
     img.height = size;
@@ -24,8 +24,9 @@
     img.onerror = function() {
       img.src = canvas.toDataURL();
     };
-
-    img.src = url ? url.split('?').shift() + '?s=' + size + '&d=404' : canvas.toDataURL();
+    
+    url = avatar.validateURL(url, size);
+    img.src = url || canvas.toDataURL();
 
     return img;
 
