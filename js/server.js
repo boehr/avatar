@@ -81,7 +81,7 @@
     if (!params.u && params.h.indexOf('@') !== -1) {
       var md5 = crypto.createHash('md5');
       md5.update(params.h);
-      params.u = 'http://www.gravatar.com/avatar/' + md5.digest('hex') + '.png';
+      params.u = 'http://www.gravatar.com/avatar/' + md5.digest('hex') + '.png?s=' + params.s + '&d=404';
     }
     
     
