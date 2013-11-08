@@ -1,13 +1,31 @@
 {
   "name": "avatar",
+  "description": "Image Service",
   "version": "0.1.0",
-  "description": "avatar",
-  "keywords": [],
   "author": {
     "name": "Hojoki GmbH",
     "email": "support@hojoki.com",
     "url": "http://hojoki.com"
   },
+  "homepage": "http://hojoki.com",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/boehr/avatar.git"
+  },
+  "bugs": {
+    "url": "http://github.com/boehr/avatar/issues"
+  },
+  "main": "bin/avatar",
+  "scripts": {
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "keywords": [
+    "image",
+    "server",
+    "proxy"
+  ],
   "dependencies": {
     "canvas": "~1.1.0",
     "request": "~2.27.0",
@@ -15,8 +33,7 @@
   },
   "devDependencies": {
     "grunt-contrib-jshint": "~0.6.4",
-    "jshint-stylish": "~0.1.1"
-  },
-  "repository": {},
-  "bugs": {}
+    "jshint-stylish": "~0.1.1",
+    "winston": "~0.7.2"
+  }
 }

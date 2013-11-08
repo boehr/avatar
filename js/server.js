@@ -13,13 +13,33 @@
 
   var avatar = require('./avatar');
 
+  // setup logging
+  var winston = require('winston');
+  var logger = new (winston.Logger)({
+    transports: [
+      new winston.transports.File({
+        filename: 'log/debug.log',
+        maxsize: 500000, /*500MB*/
+        maxFiles: 3
+      })
+    ],
+    exceptionHandlers: [
+      new winston.transports.File({
+        filename: 'log/error.log',
+        maxsize: 500000, /*500MB*/
+        maxFiles: 3
+      })
+    ],
+    exitOnError: false // TODO [scthi]: re-check if this is the right choice
+  });
+
   function loadImg(imgURL, size, callback) {
     // node canvas doesn't support remote urls for images, so we have to load the images by ourselves
     // and give it a data uri.
     request({ url: imgURL, encoding: 'binary' }, function (error, imageResponse, imageBody) {
 
       if (error) {
-        console.log('ERROR: afterReq -', error);
+        logger.info('afterReq - image loading failed:', error);
         callback(null);
         return;
       }
@@ -104,7 +124,7 @@
     var port = process.argv[2] || 8888;
 
     http.createServer(handleRequest).listen(port);
-    console.log('INFO: Avatar Server Running on', port);
+    logger.info('Avatar Server Running on', port);
 
   };
 
