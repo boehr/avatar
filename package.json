@@ -16,8 +16,7 @@
     "url": "http://github.com/boehr/avatar/issues"
   },
   "main": "bin/avatar",
-  "scripts": {
-  },
+  "scripts": {},
   "engines": {
     "node": ">= 0.8.0"
   },
@@ -29,11 +28,12 @@
   "dependencies": {
     "canvas": "~1.1.0",
     "request": "~2.27.0",
-    "pngcrush": "0.0.3"
+    "pngcrush": "0.0.3",
+    "winston": "~0.7.2",
+    "winston-papertrail": "~0.1.4"
   },
   "devDependencies": {
     "grunt-contrib-jshint": "~0.6.4",
-    "jshint-stylish": "~0.1.1",
-    "winston": "~0.7.2"
+    "jshint-stylish": "~0.1.1"
   }
 }

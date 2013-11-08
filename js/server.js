@@ -1,6 +1,7 @@
 (function() {
 
   'use strict';
+  var os = require("os");
 
   var http = require('http');
   var url = require('url');
@@ -15,6 +16,7 @@
 
   // setup logging
   var winston = require('winston');
+  void(require('winston-papertrail').Papertrail);
   var logger = new (winston.Logger)({
     transports: [
       new winston.transports.File({
@@ -28,12 +30,19 @@
         filename: 'log/error.log',
         maxsize: 500000, /*500MB*/
         maxFiles: 3
+      }),
+      new winston.transports.Papertrail({
+        host: 'logs.papertrailapp.com',
+        port: 24814,
+        hostname: os.hostname(),
+        program: 'avatar'
       })
     ],
     exitOnError: false // TODO [scthi]: re-check if this is the right choice
   });
 
   function loadImg(imgURL, size, callback) {
+
     // node canvas doesn't support remote urls for images, so we have to load the images by ourselves
     // and give it a data uri.
     request({ url: imgURL, encoding: 'binary' }, function (error, imageResponse, imageBody) {
