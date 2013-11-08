@@ -46,7 +46,7 @@
 
     res.writeHead(200, {
       'Content-Type': 'image/png',
-      'Cache-Control': 'max-age=86400, public', /*24h*/
+      'Cache-Control': 'max-age=604800, public', /* one week */
       'ETag': etag
     });
 
