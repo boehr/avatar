@@ -38,4 +38,16 @@ on: web.hojoki.com
 folder: /var/avatar
 user: bitbucket
 
-Timm has a cronjob running, which auto restarts the avatar process on the server.
+Start/Stop Avatar Service
+-------------------------------------------------
+
+Avatarservice is located at our Webserver (web.hojoki.com). Use the Startscript at:
+```
+/opt/hojoki/deploy/trunk/script/webserver/startAvatar.sh
+```
+It takes the Parameters `start [num]`, `stop` and `status [num]`.
+* `start [num]`: Starts `num` instances of avatar and installs iptables Rules to balance RR between them. Default `num` is 6
+* `stop`: Stops all Avatar Processes and deletes RR iptable Rules
+* `status [num]`: Checks if the number of Avatarsevices and iptables Rules matches `num`. On success it will do nothing; on failure it will restart all Avatarservices. Default `num` is 6
+ 
+Timm has a cronjob running, which auto restarts the avatar process on the server using the `status` option.
